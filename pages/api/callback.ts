@@ -39,6 +39,12 @@ export default async function handler(
             }
         });
         const { access_token, refresh_token, expires_in } = data;
+        if (!access_token || !refresh_token || !expires_in) {
+            res.status(500).json({
+                error: 'Something went wrong',
+                data: JSON.stringify(data)
+            })
+        }
         res.setHeader('Set-Cookie', serialize('access_token', access_token, { path: '/playlist', expires: new Date(Date.now() + (1000 * 60 * expires_in)) }));
         res.setHeader('Set-Cookie', serialize('refresh_token', refresh_token, { path: '/playlist', expires: new Date(Date.now() + (1000 * 60 * expires_in))}));
         res.redirect('/playlist');
