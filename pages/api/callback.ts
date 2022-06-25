@@ -44,5 +44,3 @@ export default async function handler(
         res.redirect('/playlist');
     }
 }
-//1c851586-6d09-4741-be9f-8da22f6da480
-//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
