@@ -39,8 +39,9 @@ export default async function handler(
             }
         });
         const { access_token, refresh_token, expires_in } = data;
+        console.error(JSON.stringify(data));
+        console.error(access_token, refresh_token, expires_in);
         if (!access_token || !refresh_token || !expires_in) {
-            console.error(JSON.stringify(data));
             res.status(500).json({
                 error: 'Something went wrong',
                 data: JSON.stringify(data)
