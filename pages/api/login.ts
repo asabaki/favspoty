@@ -3,11 +3,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { serialize } from 'cookie'
 import { v4 } from 'uuid'
-type Data = {
-    name: string
-}
-const client_id = 'd0097a7c6d9141fa8f2acc9d16ada3cb'
-const redirect_uri = 'http://localhost:3000/api/callback';
+const client_id = process.env.SPOTIFY_CLIENT_ID;
+const redirect_uri = process.env.REDIRECT_URI;
 var stateKey = 'spotify_auth_state';
 
 
@@ -24,9 +21,9 @@ export default function handler(
     res.redirect('https://accounts.spotify.com/authorize?' +
         new URLSearchParams({
             response_type: 'code',
-            client_id: client_id,
+            client_id: client_id as string,
             scope: scope,
-            redirect_uri: redirect_uri,
+            redirect_uri: redirect_uri as string,
             state: state
         }));
 }

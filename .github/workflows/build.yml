@@ -5,10 +5,10 @@ name: Build and Deploy
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  # push:
+  #   branches: [ "main" ]
+  # pull_request:
+  #   branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -64,6 +64,6 @@ jobs:
           export TAG=$([[ $CURRENT_BRANCH == "main" ]] && echo ${{ steps.bump-version.outputs.new_tag  }}|| echo $CURRENT_BRANCH)
           export GITHUB_REF_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
           export GITHUB_BRANCH_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$TAG
-          docker build -t asibaka/favspoty:$TAG .
-          docker push asibaka/favspoty:$TAG
+          docker build -t asibaka/favspoty:$TAG -t asibaka/favspoty:latest .
+          docker push asibaka/favspoty --all-tags
       
