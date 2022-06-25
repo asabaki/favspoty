@@ -1,6 +1,5 @@
 import { Card, CardHeader, Typography } from "@material-tailwind/react"
 import axios from "axios"
-import Image from "next/image"
 
 export type Profile = {
     country: string;
@@ -49,7 +48,7 @@ export default function Playlist({ profile, playlist }: { profile: Profile, play
     return (
         <div className="container m-4 flex flex-col">
             <Card className="w-40 h-[11rem] p-4 mr-4">
-                <Image src={profile.images[0].url} width={150} height={150}></Image>
+                <img src={profile.images[0].url} width={150} height={150}></img>
             </Card>
             <Card className="p-4">
                 <h1>Logged in as {profile.display_name}</h1>
@@ -67,7 +66,7 @@ export default function Playlist({ profile, playlist }: { profile: Profile, play
                         playlist.items.map((item: any) => {
                             return (
                                 <div key={item.id}>
-                                    <Image src={item.images[0].url} width={150} height={150}></Image>
+                                    <img src={item.images[0].url} width={150} height={150}></img>
                                     <span className="mr-2">{item.name}</span>
                                     <span className="mr-2">{item.tracks.total} tracks</span>
                                     <span className="mr-2">{item.href}</span>

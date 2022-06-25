@@ -47,8 +47,10 @@ export default async function handler(
                 data: JSON.stringify(data)
             })
         }
-        res.setHeader('Set-Cookie', serialize('access_token', access_token, { path: '/playlist', expires: new Date(Date.now() + (1000 * 60 * expires_in)) }));
-        res.setHeader('Set-Cookie', serialize('refresh_token', refresh_token, { path: '/playlist', expires: new Date(Date.now() + (1000 * 60 * expires_in))}));
+        res.setHeader('Set-Cookie', [
+            serialize('access_token', access_token, { path: '/playlist', expires: new Date(Date.now() + expires_in * 1000) }),
+            serialize('refresh_token', refresh_token, { path: '/playlist', expires: new Date(Date.now() + expires_in * 1000) })
+        ]);
         res.redirect('/playlist');
     }
 }
