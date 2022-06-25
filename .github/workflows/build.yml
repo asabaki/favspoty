@@ -15,10 +15,42 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-    bump-version:
-      runs-on: ubuntu-latest
-      steps: 
+  build:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.3.0
+        with:
+          node-version: 16.15.1
+          cache: yarn
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Build the app
+        run: yarn build
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          # Artifact name
+          name: build # optional, default is artifact
+          path: |
+            .next
+            public
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: build
+      - name: Login Docker
+        uses: docker/login-action@v2.0.0
+        with:
+          registry: docker.io
+          username: asibaka
+          password: ${{ secrets.DOCKER_PAT }}
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         id: bump-version
@@ -26,60 +58,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           DEFAULT_BUMP: patch
           WITH_V: true
-          DRY_RUN: true
-      - name: Get Bumped Version
+      - name: Build and Deploy Docker Image
         run: |
-          echo "Current version: ${{ steps.bump-version.outputs.tag  }}"
-          echo "Bumped version:  ${{ steps.bump-version.outputs.new_tag  }}"
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Setup Node.js environment
-#         uses: actions/setup-node@v3.3.0
-#         with:
-#           node-version: 16.15.1
-#           cache: yarn
-#       - name: Install dependencies
-#         run: yarn install --frozen-lockfile
-#       - name: Build the app
-#         run: yarn build
-#       - name: Upload a Build Artifact
-#         uses: actions/upload-artifact@v3.1.0
-#         with:
-#           # Artifact name
-#           name: build # optional, default is artifact
-#           path: |
-#             .next
-#             public
-#   deploy:
-#     needs: build
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
-#       - name: Download Artifacts
-#         uses: actions/download-artifact@v3.0.0
-#         with:
-#           name: build
-#       - name: Login Docker
-#         uses: docker/login-action@v2.0.0
-#         with:
-#           registry: docker.io
-#           username: asibaka
-#           password: ${{ secrets.DOCKER_PAT }}
-#       - name: Bump version and push tag
-#         uses: anothrNick/github-tag-action@1.36.0
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-#           DEFAULT_BUMP: patch
-#           WITH_V: true
-#           DRY_RUN: true
-#       - name: Build Docker Image
-#         run: |
-#           export CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-#           export TAG=$([[ $CURRENT_BRANCH == "main" ]] && echo "latest" || echo $CURRENT_BRANCH)
-#           export GITHUB_REF_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
-#           export GITHUB_BRANCH_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$TAG
-#           docker build -t asibaka/favspoty:$TAG .
-#           docker push asibaka/favspoty:$TAG
+          export CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+          export TAG=$([[ $CURRENT_BRANCH == "main" ]] && echo ${{ steps.bump-version.outputs.new_tag  }}|| echo $CURRENT_BRANCH)
+          export GITHUB_REF_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
+          export GITHUB_BRANCH_IMAGE=ghcr.io/$GITHUB_REPOSITORY:$TAG
+          docker build -t asibaka/favspoty:$TAG .
+          docker push asibaka/favspoty:$TAG
       
