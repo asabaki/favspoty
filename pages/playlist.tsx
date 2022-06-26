@@ -73,7 +73,7 @@ export default function Playlist({ profile, playlist }: { profile: Profile, play
                     </TableHead>
                     <TableBody>
                         {playlist.items.map((item: any) => {
-                            return (<TableRow>
+                            return (<TableRow key={item.name}>
                                 <TableCell><img src={item.images[0].url} width={150} height={150}></img></TableCell>
                                 <TableCell><Typography variant="h6">{item.name}
                                     </Typography></TableCell>
