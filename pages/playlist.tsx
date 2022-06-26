@@ -1,5 +1,6 @@
-import { Card, CardHeader, Typography } from "@material-tailwind/react"
+import { Avatar, Box, Card, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import axios from "axios"
+import LocationOn from "@mui/icons-material/LocationOn";
 
 export type Profile = {
     country: string;
@@ -47,36 +48,41 @@ export default function Playlist({ profile, playlist }: { profile: Profile, play
     }
     return (
         <div className="container m-4 flex flex-col">
-            <Card className="w-40 h-[11rem] p-4 mr-4">
-                <img src={profile.images[0].url} width={150} height={150}></img>
-            </Card>
-            <Card className="p-4">
-                <h1>Logged in as {profile.display_name}</h1>
-                <h1>ID: {profile.id}</h1>
-                <h1>Email: {profile.email}</h1>
-                <h1>Spotify URI: {profile.external_urls.spotify}</h1>
-                <h1>Link: {profile.href}</h1>
-                <h1>Country: {profile.country}</h1>
-            </Card>
 
-            <Card className="p-4 block">
-                <h1>Playlists</h1>
-                <div>
-                    {
-                        playlist.items.map((item: any) => {
-                            return (
-                                <div key={item.id}>
-                                    <img src={item.images[0].url} width={150} height={150}></img>
-                                    <span className="mr-2">{item.name}</span>
-                                    <span className="mr-2">{item.tracks.total} tracks</span>
-                                    <span className="mr-2">{item.href}</span>
-                                </div>
-                            )
-                        })
-                    }
-                </div>
+            <Card>
+                <Box sx={{ p: 2, display: 'flex' }} >
+                    <Avatar variant="rounded" sx={{ width: 150, height: 150 }} src={profile.images[0].url} className="mr-4" />
+                    <Stack spacing={0.5}>
+                        <Typography fontWeight={700}>Logged in as {profile.display_name}</Typography>
+                        <Typography variant="body2" color="text.secondary" >ID: {profile.id}</Typography>
+                        <Typography variant="body2" color="text.secondary" >Email: {profile.email}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            <LocationOn /> {profile.country}
+                        </Typography>
+                    </Stack>
+                </Box>
             </Card>
-
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell></TableCell>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Total Song</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {playlist.items.map((item: any) => {
+                            return (<TableRow>
+                                <TableCell><img src={item.images[0].url} width={150} height={150}></img></TableCell>
+                                <TableCell><Typography variant="h6">{item.name}
+                                    </Typography></TableCell>
+                                <TableCell>{item.tracks.total}</TableCell>
+                            </TableRow>)
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     )
 }
